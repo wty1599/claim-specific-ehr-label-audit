@@ -37,4 +37,16 @@ check("cluster-bootstrap fixed seed",
       identical(indices, cluster_bootstrap_indices(c("a", "a", "b", "c"), 3L, 123L)))
 check("percentile interval", isTRUE(all.equal(unname(percentile_interval(1:100)),
       unname(quantile(1:100, c(0.025, 0.975))), tolerance = 0)))
+inventory <- read.csv(file.path(repo, "R_PACKAGE_REQUIREMENTS.csv"), stringsAsFactors = FALSE)
+inventory_paths <- strsplit(inventory$files, "; ", fixed = TRUE)
+check("package inventory references existing released files",
+      all(file.exists(file.path(repo, unlist(inventory_paths)))) &&
+      identical(as.integer(lengths(inventory_paths)), as.integer(inventory$n_scripts)))
+raw_entry <- "R/domain3/raw_temperature_completion/scripts/01_restore_and_evaluate_raw.R"
+raw_packages <- c("data.table", "digest", "jsonlite", "glmnet", "ranger")
+check("Raw completion dependencies are mapped to their entry point",
+      all(vapply(raw_packages, function(package) {
+        row <- which(inventory$package == package)
+        length(row) == 1L && raw_entry %in% inventory_paths[[row]]
+      }, logical(1))))
 cat(length(checks), "public dependency utility checks passed; artificial fixtures only.\n")

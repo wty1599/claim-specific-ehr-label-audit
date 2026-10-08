@@ -14,6 +14,7 @@ walk <- function(node, found = character()) {
     }
   } else if (is.call(node)) {
     fun <- node[[1L]]
+    if (is.call(fun)) found <- walk(fun, found)
     if (is.symbol(fun)) {
       name <- as.character(fun)
       if (name %in% c("::", ":::")) {
@@ -49,7 +50,11 @@ inventory <- data.frame(
   files = vapply(packages[names], function(x) paste(sort(unique(x)), collapse = "; "), character(1)),
   stringsAsFactors = FALSE
 )
-write.csv(inventory, file.path(root, "R_PACKAGE_REQUIREMENTS.csv"), row.names = FALSE,
-          na = "")
+csv <- character()
+connection <- textConnection("csv", "w", local = TRUE)
+write.csv(inventory, connection, row.names = FALSE, na = "")
+close(connection)
+writeBin(charToRaw(paste0(paste(csv, collapse = "\n"), "\n")),
+         file.path(root, "R_PACKAGE_REQUIREMENTS.csv"))
 message("Inventoried ", nrow(inventory), " literal package dependencies across ",
         length(files), " R files. Dynamic package names require manual review.")
