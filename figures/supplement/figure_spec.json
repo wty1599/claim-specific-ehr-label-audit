@@ -1,0 +1,90 @@
+{
+  "version": "4.0.0",
+  "date": "2026-08-29",
+  "font": {
+    "family": "Arial"
+  },
+  "sizes_pt": {
+    "panel_letter": 11.0,
+    "panel_title": 9.8,
+    "axis_title": 8.6,
+    "axis_text": 7.8,
+    "annotation": 7.2,
+    "small": 6.7
+  },
+  "line_width_pt": {
+    "data": 0.75,
+    "interval": 0.55,
+    "axis": 0.45,
+    "grid": 0.30,
+    "reference": 0.50,
+    "border": 0.55
+  },
+  "palette": {
+    "ink": "#262B2F",
+    "muted": "#60686E",
+    "paper": "#FFFFFF",
+    "grid": "#E6E8E8",
+    "border": "#C9CDCF",
+    "reference": "#969C9F",
+    "neutral_fill": "#F1F2F0",
+    "neutral_dark": "#6B706F",
+    "detection_fill": "#E8EDF3",
+    "c1": "#A45F5B",
+    "c2": "#2A7B96",
+    "renal": "#537B9D",
+    "acidbase": "#697E45",
+    "other": "#777975",
+    "base": "#6B6D69",
+    "base_k2": "#A07E4B",
+    "raw_en": "#5E78A2",
+    "raw_rf": "#936A8D"
+  },
+  "states": {
+    "S1": {
+      "label": "Inferential uncertainty",
+      "fill": "#F0EAF1",
+      "stroke": "#A78DAD",
+      "dash": "solid",
+      "shape": "circle"
+    },
+    "S2": {
+      "label": "Expected reference condition",
+      "fill": "#EDF1EA",
+      "stroke": "#869C80",
+      "dash": "dotted",
+      "shape": "box"
+    },
+    "S3": {
+      "label": "Object or reference absent",
+      "fill": "#FFFFFF",
+      "stroke": "#747B80",
+      "dash": "dashed",
+      "shape": "diamond"
+    },
+    "S4": {
+      "label": "Evaluated failure",
+      "fill": "#F3EAE4",
+      "stroke": "#AF7757",
+      "dash": "bold",
+      "shape": "triangle"
+    }
+  },
+  "figures_mm": {
+    "Figure1": {"width": 180, "height": 118},
+    "Figure2": {"width": 180, "height": 150},
+    "Figure3": {"width": 180, "height": 154},
+    "Figure4": {"width": 180, "height": 158},
+    "Figure5": {"width": 180, "height": 132}
+  },
+  "export": {"dpi": 600, "png_background": "#FFFFFF"},
+  "hcl_provenance": {
+    "c1": "H=15 C=50 L=48",
+    "c2": "H=225 C=42 L=48",
+    "renal": "H=240 C=38 L=50",
+    "acidbase": "H=105 C=38 L=50",
+    "S1": "H=300 C=25 L=62",
+    "S2": "H=120 C=22 L=62",
+    "S4": "H=35 C=50 L=55"
+  }
+}

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "Please cite this software release and the associated article when available."
+title: "What a reused EHR-derived patient label can support: a claim-specific specification illustrated with a sepsis partition"
+type: software
+abstract: "Code-only claim-specific EHR label audit with post hoc temperature correction, verified Raw-model reconstruction using the archived L2 recipe, corrected external evaluation and paired comparisons, held-out recalibration and hospital funnel. Restricted data, fitted objects and empirical figure sources are excluded."
+version: 1.0.0-jamia-submission
+date-released: 2026-10-08
+repository-code: "https://github.com/wty1599/claim-specific-ehr-label-audit"
+authors:
+  - family-names: Wang
+    given-names: Tianyi
+    affiliation: "Department of Anaesthesiology, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+  - family-names: Chen
+    given-names: Jun
+    affiliation: "Department of Anaesthesiology; Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+  - family-names: Zhang
+    given-names: Yukun
+    affiliation: "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+license: MIT
