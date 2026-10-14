@@ -1,0 +1,37 @@
+{
+  "title": "What a reused EHR-derived patient label can support: a claim-specific specification illustrated with a sepsis partition",
+  "upload_type": "software",
+  "description": "Code-only research software for a claim-specific specification illustrated with one sepsis partition. Includes post hoc temperature-source correction, Base + K2 updating, verified reconstruction and corrected-temperature external evaluation of Raw-EN/Raw-RF using the archived L2 recipe, current paired comparisons, held-out recalibration, hospital funnel and missing-pattern transfer. Model evaluation uses R 4.6.0; unchanged figure calculations use R 4.5.3. Restricted data, fitted objects, result tables, figure datasets and execution logs are excluded.",
+  "creators": [
+    {
+      "name": "Wang, Tianyi",
+      "affiliation": "Department of Anaesthesiology, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    },
+    {
+      "name": "Chen, Jun",
+      "affiliation": "Department of Anaesthesiology; Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    },
+    {
+      "name": "Zhang, Yukun",
+      "affiliation": "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    }
+  ],
+  "license": "mit",
+  "access_right": "open",
+  "publication_date": "2026-10-08",
+  "version": "1.0.0-jamia-submission",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/wty1599/claim-specific-ehr-label-audit",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "keywords": [
+    "electronic health records",
+    "patient labels",
+    "claim-specific audit",
+    "sepsis",
+    "reproducibility"
+  ]
+}
