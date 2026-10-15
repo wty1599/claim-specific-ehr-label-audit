@@ -1,7 +1,20 @@
 script_dir <- dirname(normalizePath(sub('^--file=', '', grep('^--file=', commandArgs(FALSE), value=TRUE)[1]), winslash='/'))
 source(file.path(script_dir, 'common.R'))
+# Keep the raster device local to this renderer.
+export_figure <- function(plot,name,height_mm,width_mm=SPEC$width_mm) {
+  draw <- function() { if(is.function(plot)) plot() else if(inherits(plot,'grob')) {grid.newpage();grid.draw(plot)} else print(plot) }
+  grDevices::cairo_pdf(file.path(OUT,paste0(name,'.pdf')),width=width_mm/25.4,height=height_mm/25.4,family=FONT,onefile=TRUE)
+  draw();dev.off()
+  ragg::agg_tiff(file.path(OUT,paste0(name,'.tiff')),width=width_mm,height=height_mm,units='mm',res=600,compression='lzw',background='white')
+  draw();dev.off()
+  ragg::agg_png(file.path(QA,paste0(name,'.png')),width=width_mm,height=height_mm,units='mm',res=180,background='white')
+  draw();dev.off()
+  writeLines(c(paste('Width_mm',width_mm),paste('Height_mm',height_mm),paste('Body_pt',FS),paste('Tag_pt',TAG)),file.path(QA,paste0(name,'_dimensions.txt')))
+}
+# R's graphics lwd unit is 1/96 inch; allow for conversion in the PDF device.
+LW <- max(LW, .28)
+theme_update(axis.line=element_line(linewidth=LW), axis.ticks=element_line(linewidth=LW))
 
-# Presentation-only rendering from the archived aggregate inputs.
 read_fig5 <- function(name) read_source(file.path('fig5', name))
 rate <- read_fig5('Figure6_panelB_treatment_prevalence_v2.csv')
 ess <- read_fig5('arm_ess_concentration_by_target.csv')
@@ -14,14 +27,25 @@ c2 <- balance[balance$phenotype == 'C2 lower-risk' &
               balance$target == 'ATO' &
               balance$variable != 'urine_output_24h_ml', ]
 c2 <- c2[order(abs(c2$smd_fixed_unweighted_scale), decreasing=TRUE), ]
+threshold <- .1
 stopifnot(identical(as.integer(rate$n_treated), c(265L,49L)),
           identical(as.integer(rate$n), c(3151L,14374L)),
           identical(round(100*rate$treatment_prevalence,2), c(8.41,.34)),
           identical(round(ess$arm_ess,1), c(54.9,2279.3,23.9,14324.5)),
-          sum(rate$n)==tail(flow$n_remaining,1), nrow(c2)==15L,
-          sum(abs(c2$smd_fixed_unweighted_scale)>.1)==8L,
+          all(rate$n_treated+rate$n_control==rate$n),
+          sum(rate$n)==tail(flow$n_remaining,1),
+          all(abs(rate$treatment_prevalence-rate$n_treated/rate$n)<1e-14),
+          nrow(c2)==15L, !anyDuplicated(c2$variable),
+          all(is.finite(c2$smd_fixed_unweighted_scale)),
+          sum(abs(c2$smd_fixed_unweighted_scale)>threshold)==8L,
           c2$variable[1]=='creatinine_max',
-          round(abs(c2$smd_fixed_unweighted_scale[1]),3)==.927)
+          round(abs(c2$smd_fixed_unweighted_scale[1]),3)==.927,
+          SPEC$width_mm==174, FS==8, TAG==10, LW>=.2, FONT=='Arial')
+for (i in seq_len(nrow(rate))) {
+  z <- ess[ess$phenotype==rate$phenotype[i], ]
+  stopifnot(z$n[z$treatment==1]==rate$n_treated[i],
+            z$n[z$treatment==0]==rate$n_control[i])
+}
 
 labels <- c(age='Age', sofa_score='SOFA score', aki_stage_0_24h='AKI stage',
             sapsii='SAPS II', creatinine_max='Creatinine, maximum',
@@ -32,6 +56,48 @@ labels <- c(age='Age', sofa_score='SOFA score', aki_stage_0_24h='AKI stage',
             resp_rate_max='Respiratory rate, maximum', gcs_min='GCS, minimum',
             gender_male='Male sex')
 stopifnot(setequal(names(labels), c2$variable))
+
+# Supply existing aggregate SMDs directly; do not call a balance estimator.
+B <- data.frame(Type=ifelse(c2$variable=='gender_male','Binary','Contin.'),
+                Diff.Un=c2$unweighted_smd_fixed_scale,
+                Diff.Adj=c2$smd_fixed_unweighted_scale,
+                row.names=unname(labels[c2$variable]))
+bt <- structure(list(Balance=B), class=c('bal.tab.bin','bal.tab'))
+attr(bt,'print.options') <- list(type='bin', stats='mean.diffs', abs=FALSE,
+                                 continuous='std', binary='std', weight.names='Adj',
+                                 nweights=1L, un=TRUE, quick=FALSE)
+p_c <- cobalt::love.plot(bt, stats='mean.diffs', abs=TRUE, var.order=NULL,
+                         thresholds=c(m=threshold), colors=c(GREY,BLUE), shapes=c(1,16),
+                         size=2.2, line=FALSE, sample.names=c('Unweighted','Overlap weighted'),
+                         position='top', title=NULL, wrap=60) +
+  labs(x='Absolute standardized mean difference',y=NULL) +
+  theme_classic(base_size=FS,base_family=FONT) +
+  theme(text=element_text(colour=INK),axis.text=element_text(size=FS,colour=INK),
+        axis.line=element_line(linewidth=LW),axis.ticks=element_line(linewidth=LW),
+        legend.position='top',legend.title=element_blank(),legend.text=element_text(size=FS),
+        legend.margin=margin(0,0,0,0),plot.margin=margin(0,7,3,4)) +
+  annotate('text',x=.12,y=15.5,label='0.1 threshold',hjust=0,vjust=1,
+           colour=INK,family=FONT,size=FS/ggplot2::.pt)
+for (i in seq_along(p_c$layers)) {
+  if (inherits(p_c$layers[[i]]$geom,'GeomVline')) p_c$layers[[i]]$aes_params$linewidth <- LW
+  if (inherits(p_c$layers[[i]]$geom,'GeomPoint')) {
+    p_c$layers[[i]]$mapping$stroke <- NULL
+    p_c$layers[[i]]$aes_params$stroke <- .45
+  }
+}
+stopifnot(identical(tail(levels(p_c$data$var),1),unname(labels[c2$variable[1]])))
+for (i in seq_len(nrow(c2))) {
+  z <- p_c$data[as.character(p_c$data$var)==labels[c2$variable[i]], ]
+  stopifnot(z$stat[z$Sample=='Unweighted']==abs(c2$unweighted_smd_fixed_scale[i]),
+            z$stat[z$Sample=='Overlap weighted']==abs(c2$smd_fixed_unweighted_scale[i]))
+}
+point_layer <- which(vapply(p_c$layers,function(x) inherits(x$geom,'GeomPoint'),logical(1)))
+rendered_points <- ggplot_build(p_c)$data[[point_layer]]
+stopifnot(nrow(rendered_points)==2L*nrow(c2),all(rendered_points$stroke>0),
+          sum(rendered_points$shape==1)==nrow(c2),sum(rendered_points$shape==16)==nrow(c2),
+          identical(sort(rendered_points$x[rendered_points$shape==1]),sort(abs(c2$unweighted_smd_fixed_scale))),
+          identical(sort(rendered_points$x[rendered_points$shape==16]),sort(abs(c2$smd_fixed_unweighted_scale))),
+          round(max(rendered_points$x[rendered_points$shape==1]),4)==1.2098)
 
 rate$group <- factor(sub(' .*','',rate$phenotype),
                      levels=rev(sub(' .*','',rate$phenotype)))
@@ -80,29 +146,6 @@ p_btext <- ggplot(ess,aes(y=row)) +
         axis.title.x=element_text(colour='white'))
 p_both <- p_b + p_btext + patchwork::plot_layout(widths=c(1.8,1))
 
-balance_long <- rbind(
-  data.frame(variable=c2$variable,value=abs(c2$unweighted_smd_fixed_scale),
-             series='Unweighted'),
-  data.frame(variable=c2$variable,value=abs(c2$smd_fixed_unweighted_scale),
-             series='Overlap weighted'))
-balance_long$label <- factor(unname(labels[balance_long$variable]),
-                             levels=rev(unname(labels[c2$variable])))
-balance_long$series <- factor(balance_long$series,
-                              levels=c('Unweighted','Overlap weighted'))
-p_c <- ggplot(balance_long,aes(value,label,shape=series,colour=series)) +
-  geom_vline(xintercept=.1,linetype='dashed',colour=GREY,linewidth=LW) +
-  geom_point(position=position_dodge(width=.42),size=2.2,stroke=.45) +
-  annotate('text',x=.13,y=16,label='SMD = 0.1',hjust=0,
-           family=FONT,size=FS/ggplot2::.pt,colour=INK) +
-  scale_shape_manual(values=c(1,16)) +
-  scale_colour_manual(values=c(GREY,BLUE)) +
-  scale_x_continuous(limits=c(0,1.4),breaks=c(0,.1,.5,1.0),
-                     expand=expansion(mult=c(0,.02))) +
-  coord_cartesian(ylim=c(.5,16.4),clip='off') +
-  labs(x='Absolute standardized mean difference',y=NULL) +
-  theme(legend.position='top',legend.title=element_blank(),
-        plot.margin=margin(4,7,3,4),axis.ticks.y=element_blank())
-
 draw <- function() {
   grid.newpage()
   heading <- function(letter,text,x,y) {
@@ -129,9 +172,8 @@ draw <- function() {
         width=unit(172,'mm'),height=unit(98,'mm'),just=c('left','bottom')))
 }
 export_figure(draw,'Figure5',160)
-write.csv(balance_long,file.path(QA,'Figure5C_displayed_balance.csv'),row.names=FALSE)
+stopifnot(file.copy(file.path(QA,'Figure5.png'),file.path(OUT,'Figure5.png'),overwrite=TRUE))
+write.csv(c2,file.path(QA,'Figure5C_displayed_balance.csv'),row.names=FALSE)
+write.csv(p_c$data,file.path(QA,'figure5_cobalt_plotted_values.csv'),row.names=FALSE)
+write.csv(rendered_points,file.path(QA,'figure5_cobalt_rendered_points.csv'),row.names=FALSE)
 write.csv(ess,file.path(QA,'Figure5B_displayed_ESS.csv'),row.names=FALSE)
-pass('Figure5',c('Source aggregates are unchanged.',
- 'Both RRT record proportions and all four arm-specific ESS values match the source.',
- 'Fifteen C2 covariates displayed; eight overlap-weighted |SMD| values exceed 0.1.',
- 'The dashed 0.1 line is labeled within panel C.'))

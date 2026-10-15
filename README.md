@@ -1,9 +1,11 @@
 # Claim-specific EHR label audit: research code
 
-Code for *What a reused EHR-derived patient label can support: a claim-specific specification illustrated with a sepsis partition*.
+Code for *Claims and evidence for reused data-derived patient labels: a specification, a survey of sepsis partitions, and a worked example*.
 
-Version `v1.0.0-jamia-submission` (2026-10-08).
+Version `v1.0.1` (2026-10-15).
 Repository: <https://github.com/wty1599/claim-specific-ehr-label-audit>.
+
+This patch release synchronizes the Figure 3 and Figure 5 renderers with the final submission layout, clarifies Figure 3C comparison labels, prevents clipping of the Figure 5C threshold label, and updates the manuscript title and seven-author metadata. Statistical calculations and data inputs are unchanged. Literature-survey materials remain excluded.
 
 ## Scientific Scope
 

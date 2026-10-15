@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.1 - 2026-10-15
+
+- Clarify that the Figure 3C raw-feature comparisons add K2 to Raw-EN rather than compare K2 alone with Raw-EN.
+- Move the Figure 5C threshold-label anchor inside its panel to prevent clipping.
+- Synchronize both renderers and their export devices with the final submission layout, including the Figure 5 balance-panel rendering dependency.
+- Update the manuscript title and confirmed seven-author order in citation metadata.
+- Preserve all statistical calculations, input contracts and restricted-data boundaries. Literature-survey materials remain excluded.
+
 ## v1.0.0-jamia-submission - 2026-10-08
 
 - Software source version for the claim-specific EHR label audit repository.

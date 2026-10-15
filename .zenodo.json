@@ -1,25 +1,41 @@
 {
-  "title": "What a reused EHR-derived patient label can support: a claim-specific specification illustrated with a sepsis partition",
+  "title": "Claims and evidence for reused data-derived patient labels: a specification, a survey of sepsis partitions, and a worked example: analysis code",
   "upload_type": "software",
-  "description": "Code-only research software for a claim-specific specification illustrated with one sepsis partition. Includes post hoc temperature-source correction, Base + K2 updating, verified reconstruction and corrected-temperature external evaluation of Raw-EN/Raw-RF using the archived L2 recipe, current paired comparisons, held-out recalibration, hospital funnel and missing-pattern transfer. Model evaluation uses R 4.6.0; unchanged figure calculations use R 4.5.3. Restricted data, fitted objects, result tables, figure datasets and execution logs are excluded.",
+  "description": "Code-only research software for a claim-specific specification illustrated with one sepsis partition. Includes post hoc temperature-source correction, Base + K2 updating, verified reconstruction and corrected-temperature external evaluation of Raw-EN/Raw-RF using the archived L2 recipe, current paired comparisons, held-out recalibration, hospital funnel and missing-pattern transfer. This patch synchronizes the Figure 3 and Figure 5 renderers with the final submission layout and updates seven-author citation metadata; statistical calculations and inputs are unchanged. Restricted data, fitted objects, result tables, figure datasets, execution logs and literature-survey materials are excluded.",
   "creators": [
     {
       "name": "Wang, Tianyi",
       "affiliation": "Department of Anaesthesiology, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
     },
     {
+      "name": "Zhang, Yukun",
+      "affiliation": "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    },
+    {
+      "name": "Zang, Shouhua",
+      "affiliation": "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    },
+    {
+      "name": "Wu, Xiaomin",
+      "affiliation": "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    },
+    {
+      "name": "Jin, Xie",
+      "affiliation": "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
+    },
+    {
       "name": "Chen, Jun",
       "affiliation": "Department of Anaesthesiology; Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
     },
     {
-      "name": "Zhang, Yukun",
+      "name": "Fan, Chunlei",
       "affiliation": "Intensive Care Unit Division, The First Affiliated Hospital of Soochow University, Suzhou, Jiangsu, China"
     }
   ],
   "license": "mit",
   "access_right": "open",
-  "publication_date": "2026-10-08",
-  "version": "1.0.0-jamia-submission",
+  "publication_date": "2026-10-15",
+  "version": "1.0.1",
   "related_identifiers": [
     {
       "identifier": "https://github.com/wty1599/claim-specific-ehr-label-audit",
